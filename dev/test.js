@@ -1,3 +1,4 @@
+//import the blockchain.js for testing 
 const Blockchain = require('./blockchain');
 
 const bitcoin = new Blockchain();
