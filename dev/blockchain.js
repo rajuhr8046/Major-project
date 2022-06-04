@@ -1,14 +1,29 @@
 const sha256=require('sha256')
 const {v4 : uuidv4} = require('uuid');
+const Sidechain = require('./sidechain');
 const tId = uuidv4().replace('-', '');
 const currentNodeUrl=process.argv[3];
 function Blockchain(){
+	this.sidechains=[];
     this.chain=[];
     this.pendingTransactions = [];
     this.currentNodeUrl=currentNodeUrl;
     this.networkNodes=[];
     //create genesis block
     this.createNewBlock(100,'0','0');
+}
+
+Blockchain.prototype.createSideChain = function(id,amount){
+	const newBlock = {
+		type:'chain',
+		id:id,
+		amount:amount,
+	};
+	this.chain.push(newBlock);
+	const newChain = Sidechain();
+	newChain.setValues(id,this,amount)
+	this.sidechains.push(newChain);
+	return newChain;
 }
 
 Blockchain.prototype.createNewBlock = function(nonce,previousBlockHash,hash){
