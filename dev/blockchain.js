@@ -1,85 +1,85 @@
-const sha256=require('sha256')
-const {v4 : uuidv4} = require('uuid');
+const sha256 = require('sha256')
+const { v4: uuidv4 } = require('uuid');
 const Sidechain = require('./sidechain');
 const tId = uuidv4().replace('-', '');
-const currentNodeUrl=process.argv[3];
-function Blockchain(){
-	this.sidechains=[];
-    this.chain=[];
-    this.pendingTransactions = [];
-    this.currentNodeUrl=currentNodeUrl;
-    this.networkNodes=[];
-    //create genesis block
-    this.createNewBlock(100,'0','0');
+const currentNodeUrl = process.argv[3];
+function Blockchain() {
+	this.sidechains = [];
+	this.chain = [];
+	this.pendingTransactions = [];
+	this.currentNodeUrl = currentNodeUrl;
+	this.networkNodes = [];
+	//create genesis block
+	this.createNewBlock(100, '0', '0');
 }
 
-Blockchain.prototype.createSideChain = function(id,amount){
+Blockchain.prototype.createSideChain = function (id, amount) {
 	const newBlock = {
-		type:'chain',
-		id:id,
-		amount:amount,
+		type: 'chain',
+		id: id,
+		amount: amount,
 	};
 	this.chain.push(newBlock);
 	const newChain = Sidechain();
-	newChain.setValues(id,this,amount)
+	newChain.setValues(id, this, amount)
 	this.sidechains.push(newChain);
 	return newChain;
 }
 
-Blockchain.prototype.createNewBlock = function(nonce,previousBlockHash,hash){
-    const newBlock = {
-        index:this.chain.length+1,
-        timestamp:Date.now(),
-        transactions:this.pendingTransactions,
-        nonce:nonce,
-        hash:hash,
-        previousBlockHash:previousBlockHash
-    };
+Blockchain.prototype.createNewBlock = function (nonce, previousBlockHash, hash) {
+	const newBlock = {
+		index: this.chain.length + 1,
+		timestamp: Date.now(),
+		transactions: this.pendingTransactions,
+		nonce: nonce,
+		hash: hash,
+		previousBlockHash: previousBlockHash
+	};
 
-    this.pendingTransactions = [];
-    this.chain.push(newBlock);
+	this.pendingTransactions = [];
+	this.chain.push(newBlock);
 
-    return newBlock;
+	return newBlock;
 }
 
-Blockchain.prototype.getLastBlock=function(){
-    return this.chain[this.chain.length-1];
+Blockchain.prototype.getLastBlock = function () {
+	return this.chain[this.chain.length - 1];
 }
 
-Blockchain.prototype.createNewTransaction=function(amount,sender,recipient){
-    const newTransaction={
-        amount:amount,
-        sender:sender,
-        recipient:recipient,
-        transactionId:tId
-    };
+Blockchain.prototype.createNewTransaction = function (amount, sender, recipient) {
+	const newTransaction = {
+		amount: amount,
+		sender: sender,
+		recipient: recipient,
+		transactionId: tId
+	};
 
-    return newTransaction;
+	return newTransaction;
 }
 
-Blockchain.prototype.addTransactionToPendingTransactions = function(transactionObj) {
+Blockchain.prototype.addTransactionToPendingTransactions = function (transactionObj) {
 	this.pendingTransactions.push(transactionObj);
 	return this.getLastBlock()['index'] + 1;
 };
 
-Blockchain.prototype.hashBlock = function(previousBlockHash,currentBlockData,nonce){
-    const dataAsString=previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
-    const hash=sha256(dataAsString);
-    return hash;     
+Blockchain.prototype.hashBlock = function (previousBlockHash, currentBlockData, nonce) {
+	const dataAsString = previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
+	const hash = sha256(dataAsString);
+	return hash;
 }
 
-Blockchain.prototype.proofOfWork=function(previousBlockHash,currentBlockData){
-    let nonce=0;
-    let hash =this.hashBlock(previousBlockHash,currentBlockData,nonce);
-    while(hash.substring(0,4)!=='0000'){
-        nonce++;
-        hash=this.hashBlock(previousBlockHash,currentBlockData,nonce);
-       // console.log(hash);
-    }
-    return nonce;
+Blockchain.prototype.proofOfWork = function (previousBlockHash, currentBlockData) {
+	let nonce = 0;
+	let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+	while (hash.substring(0, 4) !== '0000') {
+		nonce++;
+		hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+		// console.log(hash);
+	}
+	return nonce;
 }
 
-Blockchain.prototype.chainIsValid = function(blockchain) {
+Blockchain.prototype.chainIsValid = function (blockchain) {
 	let validChain = true;
 
 	for (var i = 1; i < blockchain.length; i++) {
@@ -89,8 +89,8 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
 		if (blockHash.substring(0, 4) !== '0000') validChain = false;
 		if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validChain = false;
 
-       // console.log('previousBlockHash =>',prevBlock['hash']);
-       // console.log('currentBlockHash  =>',currentBlock['hash']);
+		// console.log('previousBlockHash =>',prevBlock['hash']);
+		// console.log('currentBlockHash  =>',currentBlock['hash']);
 	};
 
 	const genesisBlock = blockchain[0];
@@ -104,7 +104,7 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
 	return validChain;
 };
 
-Blockchain.prototype.getBlock = function(blockHash) {
+Blockchain.prototype.getBlock = function (blockHash) {
 	let correctBlock = null;
 	this.chain.forEach(block => {
 		if (block.hash === blockHash) correctBlock = block;
@@ -112,7 +112,7 @@ Blockchain.prototype.getBlock = function(blockHash) {
 	return correctBlock;
 };
 
-Blockchain.prototype.getTransaction = function(transactionId) {
+Blockchain.prototype.getTransaction = function (transactionId) {
 	let correctTransaction = null;
 	let correctBlock = null;
 
@@ -132,11 +132,11 @@ Blockchain.prototype.getTransaction = function(transactionId) {
 };
 
 
-Blockchain.prototype.getAddressData = function(address) {
+Blockchain.prototype.getAddressData = function (address) {
 	const addressTransactions = [];
 	this.chain.forEach(block => {
 		block.transactions.forEach(transaction => {
-			if(transaction.sender === address || transaction.recipient === address) {
+			if (transaction.sender === address || transaction.recipient === address) {
 				addressTransactions.push(transaction);
 			};
 		});
