@@ -1,0 +1,110 @@
+{
+	"info": {
+		"_postman_id": "b746f609-bdaa-468b-82e3-b2d787f6f417",
+		"name": "blockchain",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11124174"
+	},
+	"item": [
+		{
+			"name": "broadcast node",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"newNodeUrl\":\"http://localhost:3001\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/register-and-broadcast-node",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"register-and-broadcast-node"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sidechain creation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\":1,\n    \"amount\":5\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/createSideChain",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"createSideChain"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "transaction creation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\":100, \n    \"sender\":\"HFHFDHJGFJHFG764786875\",\n    \"recipient\":\"RAJUGJGDJ764588345834\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/transaction/broadcast",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"transaction",
+						"broadcast"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "mine chain",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/mine",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"mine"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
