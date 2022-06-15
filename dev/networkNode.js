@@ -49,8 +49,35 @@ app.get('/blockchain', function (req, res) {
 });
 
 app.post('/createSideChain', function (req, res) {
-	maincoin.createSideChain(req.body.id, req.body.amount);
-	res.json({ note: `Sidechain with id ${req.body.id} created successfully` })
+	const { id, amount, propogate } = req.body;
+	maincoin.createSideChain(id, amount);
+
+	if (propogate == true) {
+		res.json({ note: `Sidechain with id ${id} created successfully` })
+	} else {
+		const requestPromises = [];
+		maincoin.networkNodes.forEach(networkNodeUrl => {
+			const requestOptions = {
+				uri: networkNodeUrl + '/createSideChain',
+				method: 'POST',
+				body: {
+					id,
+					amount,
+					propogate: true,
+				},
+				json: true
+			};
+
+			requestPromises.push(rp(requestOptions));
+		});
+
+		Promise.all(requestPromises)
+			.then(data => {
+				res.json({ note: `Sidechain with id ${id} created successfully in all nodes` })
+			}).catch(err => {
+				console.log(err)
+			});
+	}
 });
 
 app.post('/transaction', function (req, res) {
@@ -295,7 +322,7 @@ app.get('/consensus', function (req, res) {
 });
 
 // get block by blockHash
-app.get('/block/:blockHash', function (req, res) {
+app.get('/block/:blockHash/:chain', function (req, res) {
 	const { blockHash, chain } = req.params;
 
 	if (chain && blockHash) {
@@ -315,10 +342,10 @@ app.get('/block/:blockHash', function (req, res) {
 });
 
 // get transaction by transactionId
-app.get('/transaction/:transactionId', function (req, res) {
+app.get('/transaction/:transactionId/:chain', function (req, res) {
 	const { transactionId, chain } = req.params;
 
-	if (chain && newBlock) {
+	if (chain && transactionId) {
 		let chainToAdd = getChain(chain);
 		if (chainToAdd == null) {
 			res.json({ note: `Chain not present.` });
@@ -336,8 +363,9 @@ app.get('/transaction/:transactionId', function (req, res) {
 });
 
 // get address by address
-app.get('/address/:address', function (req, res) {
-	const { address, chain } = req.params.address;
+app.get('/address/:address/:chain', function (req, res) {
+	const { address, chain } = req.params;
+
 	if (address && chain) {
 		let chainToAdd = getChain(chain);
 		if (chainToAdd == null) {
@@ -358,6 +386,14 @@ app.get('/address/:address', function (req, res) {
 app.get('/block-explorer', function (req, res) {
 	res.sendFile('./block-explorer/index.html', { root: __dirname });
 });
+
+app.get('/all-chain', (req, res) => {
+	const chains = ['main'];
+	for (let i = 0; i < maincoin.sidechains.length; i++) {
+		chains.push(maincoin.sidechains[i].id);
+	}
+	res.json({ chains: chains });
+})
 
 app.listen(port, function () {
 	console.log(`Listening on port ${port}...`);

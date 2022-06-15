@@ -138,7 +138,7 @@ function Sidechain() {
         });
 
         return {
-            addressTransactions: ADDRESSTRANSACTIONS,
+            addressTransactions: addressTransactions,
             addressBalance: balance
         };
     };

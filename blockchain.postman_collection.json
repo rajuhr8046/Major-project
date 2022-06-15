@@ -48,11 +48,11 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:3000/createSideChain",
+					"raw": "localhost:3001/createSideChain",
 					"host": [
 						"localhost"
 					],
-					"port": "3000",
+					"port": "3001",
 					"path": [
 						"createSideChain"
 					]
@@ -67,7 +67,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"amount\":100, \n    \"sender\":\"HFHFDHJGFJHFG764786875\",\n    \"recipient\":\"RAJUGJGDJ764588345834\"\n}",
+					"raw": "{\n    \"chain\": 1,\n    \"amount\":100, \n    \"sender\":\"HFHFDHJGFJHFG764786875\",\n    \"recipient\":\"RAJUGJGDJ764588345834\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
