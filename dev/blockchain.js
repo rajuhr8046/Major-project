@@ -21,7 +21,7 @@ Blockchain.prototype.createSideChain = function (id, amount) {
 		amount: amount,
 	};
 	this.chain.push(newBlock);
-	const newChain = Sidechain();
+	const newChain = new Sidechain();
 	newChain.setValues(id, this, amount)
 	this.sidechains.push(newChain);
 	return newChain;
